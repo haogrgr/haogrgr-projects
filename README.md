@@ -1,2 +1,2 @@
 # haogrgr-projects
-一些小项目的集合,自己玩玩
+一些小项目的集合,just for fun
