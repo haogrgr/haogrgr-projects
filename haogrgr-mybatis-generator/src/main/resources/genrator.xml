@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE generatorConfiguration  
+  PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"  
+  "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+	<!-- classPathEntry:数据库的JDBC驱动的jar包地址 -->
+	<!-- <classPathEntry location="mysql-connector-java-5.1.27.jar" /> -->
+
+	<context id="DB2Tables" targetRuntime="MyBatis3">
+		<property name="xmlFormatter" value="com.haogrgr.mybatis.generator.plugin.MyXmlFormatter"/>
+	
+		<plugin type="com.haogrgr.mybatis.generator.plugin.MyPlugin"></plugin>
+		
+		<commentGenerator>
+			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
+			<property name="suppressAllComments" value="true" />
+		</commentGenerator>
+
+		<!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://127.0.0.1:3306/ysdai?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf-8"
+			userId="root" password="root">
+		</jdbcConnection>
+
+		<!-- true:将DECIMAL,NUMERIC解析为BigDecimal false:解析为Integer -->
+		<javaTypeResolver>
+			<property name="forceBigDecimals" value="true" />
+		</javaTypeResolver>
+
+		<javaModelGenerator targetProject="C:\\mybatis" targetPackage="com.ysdai.model.po">
+			<property name="enableSubPackages" value="false" />
+			<property name="trimStrings" value="false" />
+		</javaModelGenerator>
+
+		<sqlMapGenerator targetProject="C:\\mybatis" targetPackage="mappers">
+			<property name="enableSubPackages" value="false" />
+		</sqlMapGenerator>
+
+		<javaClientGenerator type="XMLMAPPER" targetProject="C:\\mybatis" targetPackage="com.ysdai.core.dao">
+			<property name="enableSubPackages" value="false" />
+		</javaClientGenerator>
+
+		<!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 -->
+		<table schema="ysdai" tableName="ys_sms_msg_log" domainObjectName="SmsMsgLogModel" 
+			enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+			enableUpdateByExample="false" selectByExampleQueryId="false">
+			<generatedKey column="id" sqlStatement="JDBC" />
+		</table>
+	</context>
+</generatorConfiguration> 
