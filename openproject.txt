@@ -1,0 +1,12 @@
+https://github.com/springside/springside4
+
+https://github.com/pagehelper/Mybatis-PageHelper
+
+https://github.com/kilim/kilim
+
+https://github.com/jamesmorgan/ReloadablePropertiesAnnotation
+https://github.com/axeolotl/SpringPropertiesReloaded
+
+https://github.com/spring-projects/spring-mvc-showcase
+
+https://github.com/dustinfog/canoe-server
