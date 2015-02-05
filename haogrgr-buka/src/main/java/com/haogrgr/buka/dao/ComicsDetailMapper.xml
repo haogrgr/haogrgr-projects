@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haogrgr.buka.dao.ComicsDetailMapper">
+	<resultMap id="BaseResultMap" type="com.haogrgr.buka.model.ComicsDetail">
+		<id column="id" property="id" jdbcType="INTEGER" />
+		<result column="mid" property="mid" jdbcType="INTEGER" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="author" property="author" jdbcType="VARCHAR" />
+		<result column="intro" property="intro" jdbcType="VARCHAR" />
+		<result column="rate" property="rate" jdbcType="INTEGER" />
+		<result column="lastuptimeex" property="lastuptimeex" jdbcType="VARCHAR" />
+		<result column="popular" property="popular" jdbcType="INTEGER" />
+		<result column="favor" property="favor" jdbcType="INTEGER" />
+		<result column="finish" property="finish" jdbcType="VARCHAR" />
+		<result column="discount" property="discount" jdbcType="INTEGER" />
+		<result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+		<result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+	</resultMap>
+	
+	<sql id="Base_Column_List">
+		id, mid, name, author, intro, rate, lastuptimeex, popular, favor, finish,
+		discount, modify_time, create_time
+	</sql>
+	
+	<select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer">
+		select
+		<include refid="Base_Column_List" />
+		from comics_detail
+		where id = #{id}
+	</select>
+	
+	<select id="all" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from comics_detail
+	</select>
+	
+	<select id="count" resultType="java.lang.Integer">
+		select count(1) from comics_detail
+	</select>
+	
+	<delete id="delete" parameterType="java.lang.Integer">
+		delete from comics_detail
+		where id = #{id}
+	</delete>
+	
+	<delete id="deletes">
+		delete from comics_detail
+		where id in 
+		<foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+	</delete>
+	
+	<insert id="insert" parameterType="com.haogrgr.buka.model.ComicsDetail">
+		insert into comics_detail (
+			id, mid, name, author, intro, rate,
+			lastuptimeex, popular, favor,
+			finish, discount, modify_time, create_time
+		) values (
+			#{id}, #{mid}, #{name},
+			#{author}, #{intro}, #{rate},
+			#{lastuptimeex}, #{popular}, #{favor},
+			#{finish}, #{discount}, #{modifyTime},
+			#{createTime}
+		)
+	</insert>
+	
+	<insert id="inserts">
+		insert into comics_detail (
+			id, mid, name, author, intro, rate,
+			lastuptimeex, popular, favor,
+			finish, discount, modify_time, create_time
+		) values 
+		<foreach collection="list" item="item" separator=",">
+		    (
+		    	#{item.id}, #{item.mid}, #{item.name}, #{item.author}, #{item.intro}, #{item.rate}, #{item.lastuptimeex}, 
+				#{item.popular}, #{item.favor}, #{item.finish}, #{item.discount}, #{item.modifyTime}, #{item.createTime}
+			)
+		</foreach>
+	</insert>
+	
+	<update id="update" parameterType="com.haogrgr.buka.model.ComicsDetail">
+		update comics_detail
+		<set>
+			<if test="mid != null">
+				mid = #{mid},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="author != null">
+				author = #{author},
+			</if>
+			<if test="intro != null">
+				intro = #{intro},
+			</if>
+			<if test="rate != null">
+				rate = #{rate},
+			</if>
+			<if test="lastuptimeex != null">
+				lastuptimeex = #{lastuptimeex},
+			</if>
+			<if test="popular != null">
+				popular = #{popular},
+			</if>
+			<if test="favor != null">
+				favor = #{favor},
+			</if>
+			<if test="finish != null">
+				finish = #{finish},
+			</if>
+			<if test="discount != null">
+				discount = #{discount},
+			</if>
+			<if test="modifyTime != null">
+				modify_time = #{modifyTime},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+</mapper>

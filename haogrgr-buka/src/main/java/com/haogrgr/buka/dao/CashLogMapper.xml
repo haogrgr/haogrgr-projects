@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.haogrgr.buka.dao.CashLogMapper" >
+  <resultMap id="BaseResultMap" type="com.haogrgr.buka.model.CashLogModel" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="order_id" property="orderId" jdbcType="VARCHAR" />
+    <result column="batch_no" property="batchNo" jdbcType="VARCHAR" />
+    <result column="trx_id" property="trxId" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="INTEGER" />
+    <result column="amount" property="amount" jdbcType="DECIMAL" />
+    <result column="account_id" property="accountId" jdbcType="INTEGER" />
+    <result column="account_type" property="accountType" jdbcType="VARCHAR" />
+    <result column="history_type" property="historyType" jdbcType="VARCHAR" />
+    <result column="transform_type" property="transformType" jdbcType="VARCHAR" />
+    <result column="fee" property="fee" jdbcType="DECIMAL" />
+    <result column="fee_account_id" property="feeAccountId" jdbcType="INTEGER" />
+    <result column="fee_account_type" property="feeAccountType" jdbcType="VARCHAR" />
+    <result column="fee_history_type" property="feeHistoryType" jdbcType="VARCHAR" />
+    <result column="fee_transform_type" property="feeTransformType" jdbcType="VARCHAR" />
+    <result column="channel" property="channel" jdbcType="VARCHAR" />
+    <result column="bank_sn" property="bankSn" jdbcType="VARCHAR" />
+    <result column="bank_name" property="bankName" jdbcType="VARCHAR" />
+    <result column="bank_card_no" property="bankCardNo" jdbcType="VARCHAR" />
+    <result column="product_name" property="productName" jdbcType="VARCHAR" />
+    <result column="product_desc" property="productDesc" jdbcType="VARCHAR" />
+    <result column="end_time" property="endTime" jdbcType="TIMESTAMP" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+    <result column="operate_user_id" property="operateUserId" jdbcType="INTEGER" />
+    <result column="error_msg" property="errorMsg" jdbcType="VARCHAR" />
+    <result column="platform" property="platform" jdbcType="VARCHAR" />
+    <result column="cash_type" property="cashType" jdbcType="VARCHAR" />
+    <result column="review_type" property="reviewType" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="VARCHAR" />
+    <result column="modify_time" property="modifyTime" jdbcType="TIMESTAMP" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, order_id, batch_no, trx_id, user_id, amount, account_id, account_type, history_type, 
+    transform_type, fee, fee_account_id, fee_account_type, fee_history_type, fee_transform_type, 
+    channel, bank_sn, bank_name, bank_card_no, product_name, product_desc, end_time, 
+    remark, operate_user_id, error_msg, platform, cash_type, review_type, status, modify_time, 
+    create_time
+  </sql>
+  <select id="findById" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select 
+    <include refid="Base_Column_List" />
+    from ys_cash_log
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+  <delete id="delete" parameterType="java.lang.Integer" >
+    delete from ys_cash_log
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+  <insert id="insert" parameterType="com.haogrgr.buka.model.CashLogModel" useGeneratedKeys="true" keyProperty="id" >
+    insert into ys_cash_log (order_id, batch_no, trx_id, 
+      user_id, amount, account_id, 
+      account_type, history_type, transform_type, 
+      fee, fee_account_id, fee_account_type, 
+      fee_history_type, fee_transform_type, channel, 
+      bank_sn, bank_name, bank_card_no, 
+      product_name, product_desc, end_time, 
+      remark, operate_user_id, error_msg, 
+      platform, cash_type, review_type, 
+      status, modify_time, create_time
+      )
+    values (#{orderId,jdbcType=VARCHAR}, #{batchNo,jdbcType=VARCHAR}, #{trxId,jdbcType=VARCHAR}, 
+      #{userId,jdbcType=INTEGER}, #{amount,jdbcType=DECIMAL}, #{accountId,jdbcType=INTEGER}, 
+      #{accountType,jdbcType=VARCHAR}, #{historyType,jdbcType=VARCHAR}, #{transformType,jdbcType=VARCHAR}, 
+      #{fee,jdbcType=DECIMAL}, #{feeAccountId,jdbcType=INTEGER}, #{feeAccountType,jdbcType=VARCHAR}, 
+      #{feeHistoryType,jdbcType=VARCHAR}, #{feeTransformType,jdbcType=VARCHAR}, #{channel,jdbcType=VARCHAR}, 
+      #{bankSn,jdbcType=VARCHAR}, #{bankName,jdbcType=VARCHAR}, #{bankCardNo,jdbcType=VARCHAR}, 
+      #{productName,jdbcType=VARCHAR}, #{productDesc,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP}, 
+      #{remark,jdbcType=VARCHAR}, #{operateUserId,jdbcType=INTEGER}, #{errorMsg,jdbcType=VARCHAR}, 
+      #{platform,jdbcType=VARCHAR}, #{cashType,jdbcType=VARCHAR}, #{reviewType,jdbcType=VARCHAR}, 
+      #{status,jdbcType=VARCHAR}, #{modifyTime,jdbcType=TIMESTAMP}, #{createTime,jdbcType=TIMESTAMP}
+      )
+  </insert>
+  <update id="update" parameterType="com.haogrgr.buka.model.CashLogModel" >
+    update ys_cash_log
+    <set >
+      <if test="orderId != null" >
+        order_id = #{orderId,jdbcType=VARCHAR},
+      </if>
+      <if test="batchNo != null" >
+        batch_no = #{batchNo,jdbcType=VARCHAR},
+      </if>
+      <if test="trxId != null" >
+        trx_id = #{trxId,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=INTEGER},
+      </if>
+      <if test="amount != null" >
+        amount = #{amount,jdbcType=DECIMAL},
+      </if>
+      <if test="accountId != null" >
+        account_id = #{accountId,jdbcType=INTEGER},
+      </if>
+      <if test="accountType != null" >
+        account_type = #{accountType,jdbcType=VARCHAR},
+      </if>
+      <if test="historyType != null" >
+        history_type = #{historyType,jdbcType=VARCHAR},
+      </if>
+      <if test="transformType != null" >
+        transform_type = #{transformType,jdbcType=VARCHAR},
+      </if>
+      <if test="fee != null" >
+        fee = #{fee,jdbcType=DECIMAL},
+      </if>
+      <if test="feeAccountId != null" >
+        fee_account_id = #{feeAccountId,jdbcType=INTEGER},
+      </if>
+      <if test="feeAccountType != null" >
+        fee_account_type = #{feeAccountType,jdbcType=VARCHAR},
+      </if>
+      <if test="feeHistoryType != null" >
+        fee_history_type = #{feeHistoryType,jdbcType=VARCHAR},
+      </if>
+      <if test="feeTransformType != null" >
+        fee_transform_type = #{feeTransformType,jdbcType=VARCHAR},
+      </if>
+      <if test="channel != null" >
+        channel = #{channel,jdbcType=VARCHAR},
+      </if>
+      <if test="bankSn != null" >
+        bank_sn = #{bankSn,jdbcType=VARCHAR},
+      </if>
+      <if test="bankName != null" >
+        bank_name = #{bankName,jdbcType=VARCHAR},
+      </if>
+      <if test="bankCardNo != null" >
+        bank_card_no = #{bankCardNo,jdbcType=VARCHAR},
+      </if>
+      <if test="productName != null" >
+        product_name = #{productName,jdbcType=VARCHAR},
+      </if>
+      <if test="productDesc != null" >
+        product_desc = #{productDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="endTime != null" >
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="operateUserId != null" >
+        operate_user_id = #{operateUserId,jdbcType=INTEGER},
+      </if>
+      <if test="errorMsg != null" >
+        error_msg = #{errorMsg,jdbcType=VARCHAR},
+      </if>
+      <if test="platform != null" >
+        platform = #{platform,jdbcType=VARCHAR},
+      </if>
+      <if test="cashType != null" >
+        cash_type = #{cashType,jdbcType=VARCHAR},
+      </if>
+      <if test="reviewType != null" >
+        review_type = #{reviewType,jdbcType=VARCHAR},
+      </if>
+      <if test="status != null" >
+        status = #{status,jdbcType=VARCHAR},
+      </if>
+      <if test="modifyTime != null" >
+        modify_time = #{modifyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createTime != null" >
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=INTEGER}
+  </update>
+  <select id="all" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from ys_cash_log
+  </select>
+  <select id="count" resultType="java.lang.Integer" >
+    select count(1) from ys_cash_log
+  </select>
+  <insert id="inserts" parameterType="java.util.List" >
+    insert into ys_cash_log (order_id, batch_no, trx_id, user_id, amount, account_id, account_type, history_type, transform_type, fee, fee_account_id, fee_account_type, fee_history_type, fee_transform_type, channel, bank_sn, bank_name, bank_card_no, product_name, product_desc, end_time, remark, operate_user_id, error_msg, platform, cash_type, review_type, status, modify_time, create_time)
+    values
+    <foreach collection="list" item="item" separator="," >
+      (#{item.orderId,jdbcType=VARCHAR}, #{item.batchNo,jdbcType=VARCHAR}, #{item.trxId,jdbcType=VARCHAR}, #{item.userId,jdbcType=INTEGER}, #{item.amount,jdbcType=DECIMAL}, #{item.accountId,jdbcType=INTEGER}, #{item.accountType,jdbcType=VARCHAR}, #{item.historyType,jdbcType=VARCHAR}, #{item.transformType,jdbcType=VARCHAR}, #{item.fee,jdbcType=DECIMAL}, #{item.feeAccountId,jdbcType=INTEGER}, #{item.feeAccountType,jdbcType=VARCHAR}, #{item.feeHistoryType,jdbcType=VARCHAR}, #{item.feeTransformType,jdbcType=VARCHAR}, #{item.channel,jdbcType=VARCHAR}, #{item.bankSn,jdbcType=VARCHAR}, #{item.bankName,jdbcType=VARCHAR}, #{item.bankCardNo,jdbcType=VARCHAR}, #{item.productName,jdbcType=VARCHAR}, #{item.productDesc,jdbcType=VARCHAR}, #{item.endTime,jdbcType=TIMESTAMP}, #{item.remark,jdbcType=VARCHAR}, #{item.operateUserId,jdbcType=INTEGER}, #{item.errorMsg,jdbcType=VARCHAR}, #{item.platform,jdbcType=VARCHAR}, #{item.cashType,jdbcType=VARCHAR}, #{item.reviewType,jdbcType=VARCHAR}, #{item.status,jdbcType=VARCHAR}, #{item.modifyTime,jdbcType=TIMESTAMP}, #{item.createTime,jdbcType=TIMESTAMP})
+    </foreach>
+  </insert>
+  <delete id="deletes" >
+    delete from ys_cash_log where id in 
+    <foreach collection="ids" item="item" open="(" separator="," close=")" >
+      #{item}
+    </foreach>
+  </delete>
+  <select id="load" resultMap="BaseResultMap" >
+    select 
+    <include refid="Base_Column_List" />
+    from ys_cash_log where id in 
+    <foreach collection="ids" item="item" open="(" separator="," close=")" >
+      #{item}
+    </foreach>
+  </select>
+  <sql id="findByPageSql" >
+    select a.* from ys_cash_log a where 1=1 
+    <if test="paramMap.id != null" >
+      and a.id = #{paramMap.id,jdbcType=INTEGER}
+    </if>
+    <if test="paramMap.orderId != null" >
+      and a.order_id = #{paramMap.orderId,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.batchNo != null" >
+      and a.batch_no = #{paramMap.batchNo,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.trxId != null" >
+      and a.trx_id = #{paramMap.trxId,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.userId != null" >
+      and a.user_id = #{paramMap.userId,jdbcType=INTEGER}
+    </if>
+    <if test="paramMap.amount != null" >
+      and a.amount = #{paramMap.amount,jdbcType=DECIMAL}
+    </if>
+    <if test="paramMap.accountId != null" >
+      and a.account_id = #{paramMap.accountId,jdbcType=INTEGER}
+    </if>
+    <if test="paramMap.accountType != null" >
+      and a.account_type = #{paramMap.accountType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.historyType != null" >
+      and a.history_type = #{paramMap.historyType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.transformType != null" >
+      and a.transform_type = #{paramMap.transformType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.fee != null" >
+      and a.fee = #{paramMap.fee,jdbcType=DECIMAL}
+    </if>
+    <if test="paramMap.feeAccountId != null" >
+      and a.fee_account_id = #{paramMap.feeAccountId,jdbcType=INTEGER}
+    </if>
+    <if test="paramMap.feeAccountType != null" >
+      and a.fee_account_type = #{paramMap.feeAccountType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.feeHistoryType != null" >
+      and a.fee_history_type = #{paramMap.feeHistoryType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.feeTransformType != null" >
+      and a.fee_transform_type = #{paramMap.feeTransformType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.channel != null" >
+      and a.channel = #{paramMap.channel,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.bankSn != null" >
+      and a.bank_sn = #{paramMap.bankSn,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.bankName != null" >
+      and a.bank_name = #{paramMap.bankName,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.bankCardNo != null" >
+      and a.bank_card_no = #{paramMap.bankCardNo,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.productName != null" >
+      and a.product_name = #{paramMap.productName,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.productDesc != null" >
+      and a.product_desc = #{paramMap.productDesc,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.endTime != null" >
+      and a.end_time = #{paramMap.endTime,jdbcType=TIMESTAMP}
+    </if>
+    <if test="paramMap.remark != null" >
+      and a.remark = #{paramMap.remark,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.operateUserId != null" >
+      and a.operate_user_id = #{paramMap.operateUserId,jdbcType=INTEGER}
+    </if>
+    <if test="paramMap.errorMsg != null" >
+      and a.error_msg = #{paramMap.errorMsg,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.platform != null" >
+      and a.platform = #{paramMap.platform,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.cashType != null" >
+      and a.cash_type = #{paramMap.cashType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.reviewType != null" >
+      and a.review_type = #{paramMap.reviewType,jdbcType=VARCHAR}
+    </if>
+    <if test="paramMap.status != null" >
+      and a.status = #{paramMap.status,jdbcType=VARCHAR}
+    </if>
+    order by a.id desc
+  </sql>
+  <select id="findByPage" resultMap="BaseResultMap" parameterType="PageInfo" >
+    select temp.* from (
+    <include refid="findByPageSql" />
+    ) temp limit #{begin}, #{end}
+  </select>
+  <select id="findByPageCount" resultType="java.lang.Integer" parameterType="PageInfo" >
+    select count(1) from (
+    <include refid="findByPageSql" />
+    ) temp 
+  </select>
+</mapper>
