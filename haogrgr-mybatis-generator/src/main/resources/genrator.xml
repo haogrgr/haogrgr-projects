@@ -9,7 +9,7 @@
 
 	<context id="DB2Tables" targetRuntime="MyBatis3">
 		<property name="xmlFormatter" value="com.haogrgr.mybatis.generator.plugin.MyXmlFormatter" />
-
+		
 		<plugin type="com.haogrgr.mybatis.generator.plugin.MyPlugin"></plugin>
 
 		<commentGenerator>
@@ -18,8 +18,8 @@
 		</commentGenerator>
 
 		<!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
-		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://127.0.0.1:3306/temp?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf-8"
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver" 
+			connectionURL="jdbc:mysql://127.0.0.1:3306/test?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=utf-8" 
 			userId="root" password="123456">
 		</jdbcConnection>
 
@@ -28,23 +28,21 @@
 			<property name="forceBigDecimals" value="true" />
 		</javaTypeResolver>
 		
-		<property name="filelocation" value="C:\\mybatis"/>
-		
-		<javaModelGenerator targetProject="${filelocation}" targetPackage="com.haogrgr.test.model">
+		<javaModelGenerator targetProject="C:\\mybatis" targetPackage="com.haogrgr.test.model">
 			<property name="enableSubPackages" value="false" />
 			<property name="trimStrings" value="false" />
 		</javaModelGenerator>
 
-		<sqlMapGenerator targetProject="${filelocation}" targetPackage="mappers">
+		<sqlMapGenerator targetProject="C:\\mybatis" targetPackage="mappers">
 			<property name="enableSubPackages" value="false" />
 		</sqlMapGenerator>
 
-		<javaClientGenerator type="XMLMAPPER" targetProject="${filelocation}" targetPackage="com.haogrgr.test.dao">
+		<javaClientGenerator type="XMLMAPPER" targetProject="C:\\mybatis" targetPackage="com.haogrgr.test.dao">
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 
 		<!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 -->
-		<table schema="temp" tableName="test" domainObjectName="Test" 
+		<table schema="test" tableName="test" domainObjectName="Test" 
 			enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
 			enableUpdateByExample="false" selectByExampleQueryId="false">
 			<generatedKey column="id" sqlStatement="JDBC" />
