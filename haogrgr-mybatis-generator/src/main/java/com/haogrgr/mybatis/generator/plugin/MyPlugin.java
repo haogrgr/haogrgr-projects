@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.IntrospectedColumn;
@@ -23,15 +24,14 @@ import org.mybatis.generator.api.dom.xml.TextElement;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.codegen.mybatis3.MyBatis3FormattingUtilities;
 
+import com.haogrgr.mybatis.generator.utils.DBUtils;
+
 /**
  * mybatis-generator提供的插件接口,配置在genrator.xml中
  * <p>Author: desheng.tu</p>
  * <p>Date: 2014年8月5日</p>
  */
 public class MyPlugin extends PluginAdapter implements Plugin {
-
-    static final String BASE_MAPPER = "com.ysdai.core.dao.BaseMapper";
-    static final String BASE_MODEL = "com.ysdai.model.po.BaseModel";
 
     @Override
     public boolean validate(List<String> warnings) {
@@ -47,7 +47,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
     @Override
     public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         //所有model继承自BaseModel
-        FullyQualifiedJavaType superInterface = new FullyQualifiedJavaType(BASE_MODEL);
+        FullyQualifiedJavaType superInterface = new FullyQualifiedJavaType(topLevelClass.getType().getPackageName() + ".BaseModel");
         topLevelClass.addImportedType(superInterface);
         topLevelClass.setSuperClass(superInterface);
         
@@ -107,6 +107,21 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         dcmethod.addBodyLine("");
         methods.add(0, dcmethod);
         
+    	Map<String, String> map = DBUtils.getColumnComment(introspectedTable.getTableConfiguration().getSchema(), tablename(introspectedTable));
+    	for(IntrospectedColumn column : introspectedTable.getAllColumns()){
+    		String c = map.get(column.getActualColumnName());
+    		if(c != null){
+    			map.put(column.getJavaProperty(), c);
+    		}
+    	}
+    	System.out.println(map);
+    	for (org.mybatis.generator.api.dom.java.Field field : topLevelClass.getFields()) {
+    		String c = map.get(field.getName());
+    		if(c != null && c.trim().length() > 0){
+    			field.addJavaDocLine("/** " + c + "**/");
+    		}
+		}
+    	
         return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable);
     }
     
@@ -124,7 +139,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
     public boolean clientGenerated(Interface interfaze, TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
         //为所有的mapper接口继承com.ysdai.core.dao.BaseMapper
         String domainObjectName = introspectedTable.getTableConfiguration().getDomainObjectName();
-        String parentInterface = BASE_MAPPER + "<" + domainObjectName + ">";
+        String parentInterface = interfaze.getType().getPackageName() + ".BaseMapper<" + domainObjectName + ">";
         FullyQualifiedJavaType superInterface = new FullyQualifiedJavaType(parentInterface);
         interfaze.addImportedType(superInterface);
         interfaze.addSuperInterface(superInterface);

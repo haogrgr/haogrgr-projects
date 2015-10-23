@@ -33,6 +33,18 @@
 			<version>5.1.29</version>
 		</dependency>
 
+		<!-- groovy -->
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy</artifactId>
+			<version>2.4.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.groovy</groupId>
+			<artifactId>groovy-sql</artifactId>
+			<version>2.4.4</version>
+		</dependency>
+
 		<!-- log -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
