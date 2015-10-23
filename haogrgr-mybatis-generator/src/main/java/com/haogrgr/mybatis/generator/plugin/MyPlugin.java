@@ -203,19 +203,19 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         }
 
         //添加新方法
-        addAllMethod(mapper, introspectedTable, "all");
-        addCountMethod(mapper, introspectedTable, "count");
+        //addAllMethod(mapper, introspectedTable, "all");
+        //addCountMethod(mapper, introspectedTable, "count");
         addInsertsMethod(mapper, introspectedTable, "inserts");
         addDeletesMethod(mapper, introspectedTable, "deletes");
         addLoadMethod(mapper, introspectedTable, "load");
-        addFindByPageSql(mapper, introspectedTable, "findByPageSql");
-        addFindByPageMethod(mapper, introspectedTable, "findByPage");
-        addFindByPageCountMethod(mapper, introspectedTable, "findByPageCount");
+        //addFindByPageSql(mapper, introspectedTable, "findByPageSql");
+        //addFindByPageMethod(mapper, introspectedTable, "findByPage");
+        //addFindByPageCountMethod(mapper, introspectedTable, "findByPageCount");
 
         return super.sqlMapDocumentGenerated(document, introspectedTable);
     }
 
-    private void addFindByPageCountMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addFindByPageCountMethod(XmlElement mapper, IntrospectedTable table, String id) {
         XmlElement ele = new XmlElement("select");
         ele.addAttribute(new Attribute("id", id));
         ele.addAttribute(new Attribute("resultType", "java.lang.Integer"));
@@ -232,7 +232,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addFindByPageMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addFindByPageMethod(XmlElement mapper, IntrospectedTable table, String id) {
         XmlElement ele = new XmlElement("select");
         ele.addAttribute(new Attribute("id", id));
         ele.addAttribute(new Attribute("resultMap", "BaseResultMap"));
@@ -249,7 +249,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addFindByPageSql(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addFindByPageSql(XmlElement mapper, IntrospectedTable table, String id) {
         XmlElement ele = new XmlElement("sql");
         ele.addAttribute(new Attribute("id", id));
 
@@ -278,7 +278,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addLoadMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addLoadMethod(XmlElement mapper, IntrospectedTable table, String id) {
         if (table.getPrimaryKeyColumns().size() != 1) {
             System.err.println("load : ignore complex primary key.");
             return;
@@ -309,7 +309,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addDeletesMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addDeletesMethod(XmlElement mapper, IntrospectedTable table, String id) {
         if (table.getPrimaryKeyColumns().size() != 1) {
             System.err.println("deletes : ignore complex primary key.");
             return;
@@ -333,7 +333,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addInsertsMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addInsertsMethod(XmlElement mapper, IntrospectedTable table, String id) {
         XmlElement ele = new XmlElement("insert");
         ele.addAttribute(new Attribute("id", id));
         ele.addAttribute(new Attribute("parameterType", "java.util.List"));
@@ -372,7 +372,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addCountMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addCountMethod(XmlElement mapper, IntrospectedTable table, String id) {
         XmlElement ele = new XmlElement("select");
         ele.addAttribute(new Attribute("id", id));
         ele.addAttribute(new Attribute("resultType", "java.lang.Integer"));
@@ -382,7 +382,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private void addAllMethod(XmlElement mapper, IntrospectedTable table, String id) {
+    protected void addAllMethod(XmlElement mapper, IntrospectedTable table, String id) {
         XmlElement ele = new XmlElement("select");
         ele.addAttribute(new Attribute("id", id));
         ele.addAttribute(new Attribute("resultMap", "BaseResultMap"));
