@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.mybatis.generator.api.GeneratedJavaFile;
 import org.mybatis.generator.api.GeneratedXmlFile;
 import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
@@ -23,7 +24,9 @@ import org.mybatis.generator.api.dom.xml.Element;
 import org.mybatis.generator.api.dom.xml.TextElement;
 import org.mybatis.generator.api.dom.xml.XmlElement;
 import org.mybatis.generator.codegen.mybatis3.MyBatis3FormattingUtilities;
+import org.mybatis.generator.config.PropertyRegistry;
 
+import com.google.common.collect.Lists;
 import com.haogrgr.mybatis.generator.utils.DBUtils;
 
 /**
@@ -151,9 +154,53 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         FullyQualifiedJavaType type = interfaze.getType();
         replaceModelString(type, "baseShortName");
         replaceModelString(type, "baseQualifiedName");
-
+        
         return super.clientGenerated(interfaze, topLevelClass, introspectedTable);
     }
+    
+    /**
+     * 生成Service
+     */
+	@Override
+	public List<GeneratedJavaFile> contextGenerateAdditionalJavaFiles(IntrospectedTable introspectedTable) {
+		String basePack = introspectedTable.getContext().getJavaModelGeneratorConfiguration().getTargetPackage().replace(".model", "");
+		String baseName = introspectedTable.getTableConfiguration().getDomainObjectName();
+
+		TopLevelClass topclass = new TopLevelClass(basePack + ".service." + baseName + "Service");
+		
+		topclass.setVisibility(JavaVisibility.PUBLIC);
+
+		topclass.addImportedType(basePack + ".model." + baseName);
+		topclass.addImportedType(basePack + ".mapper." + baseName + "Mapper");
+		
+		topclass.addAnnotation("@Service");
+		topclass.addImportedType("org.springframework.stereotype.Service");
+		
+		topclass.setSuperClass(topclass.getType().getPackageName() + ".BaseServiceSupport<" + baseName + ">");
+		topclass.addImportedType(topclass.getSuperClass());
+		
+		org.mybatis.generator.api.dom.java.Field field = new org.mybatis.generator.api.dom.java.Field(baseName
+				.substring(0, 1).toLowerCase() + baseName.substring(1) + "Mapper", 
+				new FullyQualifiedJavaType(basePack + ".mapper." + baseName + "Mapper"));
+		field.addAnnotation("@Resource");
+		field.setVisibility(JavaVisibility.PRIVATE);
+		topclass.addField(field);
+		topclass.addImportedType("javax.annotation.Resource");
+
+		Method method = new Method("getMapper");
+		method.addAnnotation("@Override");
+		method.setVisibility(JavaVisibility.PUBLIC);
+		method.setReturnType(new FullyQualifiedJavaType(field.getType().getPackageName() + ".BaseMapper<" + baseName + ">"));
+		method.addBodyLine("return " + field.getName() + ";");
+		topclass.addMethod(method);
+		topclass.addImportedType(method.getReturnType());
+		
+		GeneratedJavaFile file = new GeneratedJavaFile(topclass, introspectedTable.getContext()
+				.getJavaModelGeneratorConfiguration().getTargetProject(), introspectedTable.getContext().getProperty(
+				PropertyRegistry.CONTEXT_JAVA_FILE_ENCODING), introspectedTable.getContext().getJavaFormatter());
+
+		return Lists.newArrayList(file);
+	}
     
     /**
      * 该方法在生成xml文件前调用
@@ -398,7 +445,7 @@ public class MyPlugin extends PluginAdapter implements Plugin {
         mapper.addElement(ele);
     }
 
-    private Attribute getEleAttr(XmlElement ele, String attrName) {
+    protected Attribute getEleAttr(XmlElement ele, String attrName) {
         for (Attribute attr : ele.getAttributes()) {
             if (attr.getName().equals(attrName)) {
                 return attr;
