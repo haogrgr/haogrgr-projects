@@ -19,25 +19,27 @@ import org.mybatis.generator.api.dom.xml.XmlElement;
  * <p>Author: desheng.tu</p>
  * <p>Date: 2014年8月5日</p>
  */
-public class MyXmlFormatter extends DefaultXmlFormatter implements XmlFormatter {
+public class SortedXmlFormatter extends DefaultXmlFormatter implements XmlFormatter {
 
 	private static int inc = 1;
 	private static HashMap<String, Integer> weightMap = new HashMap<String, Integer>();
-	{
+	static {
 		weightMap.put("BaseResultMap", inc++);
 		weightMap.put("Base_Column_List", inc++);
-		weightMap.put("findById", inc++);
-		weightMap.put("findByPageSql", inc++);
-		weightMap.put("findByPage", inc++);
-		weightMap.put("findByPageCount", inc++);
-		weightMap.put("load", inc++);
-		weightMap.put("update", inc++);
-		weightMap.put("all", inc++);
-		weightMap.put("count", inc++);
-		weightMap.put("insert", inc++);
-		weightMap.put("inserts", inc++);
-		weightMap.put("delete", inc++);
-		weightMap.put("deletes", inc++);
+		weightMap.put("getById", inc++);
+		weightMap.put("getByIds", inc++);
+		weightMap.put("getByPojo", inc++);
+		weightMap.put("getByPageSql", inc++);
+		weightMap.put("getByPageList", inc++);
+		weightMap.put("getByPageCount", inc++);
+		weightMap.put("getAll", inc++);
+		weightMap.put("getAllCount", inc++);
+		weightMap.put("modify", inc++);
+		weightMap.put("modifySelective", inc++);
+		weightMap.put("save", inc++);
+		weightMap.put("saveBatch", inc++);
+		weightMap.put("delById", inc++);
+		weightMap.put("delByIds", inc++);
 	}
 
 	@Override

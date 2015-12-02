@@ -4,7 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.mybatis.generator.api.GeneratedXmlFile;
-import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.PluginAdapter;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
@@ -13,10 +12,17 @@ import org.mybatis.generator.api.dom.java.TopLevelClass;
 import org.mybatis.generator.api.dom.xml.Attribute;
 import org.mybatis.generator.api.dom.xml.Document;
 import org.mybatis.generator.api.dom.xml.Element;
-import org.mybatis.generator.api.dom.xml.TextElement;
 import org.mybatis.generator.api.dom.xml.XmlElement;
-import org.mybatis.generator.codegen.mybatis3.MyBatis3FormattingUtilities;
 
+import com.haogrgr.mybatis.generator.methods.DelByIdsMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetAllCountMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetAllMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetByIdsMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetByPageCountMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetByPageListMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetByPageSqlMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.GetByPojoMethodBuilder;
+import com.haogrgr.mybatis.generator.methods.SaveBatchMethodBuilder;
 import com.haogrgr.mybatis.generator.utils.PluginUtils;
 import com.haogrgr.mybatis.generator.utils.Reflects;
 
@@ -34,10 +40,16 @@ public class MapperPlugin extends PluginAdapter {
 		return true;
 	}
 
+	/**
+	 * BaseMapper类全名
+	 */
 	private String getBaseMapperName() {
 		return this.getProperties().getProperty("baseMapperName");
 	}
 
+	/**
+	 * 要替换的字符, eg: 当model名为TestModel时, 生成的Mapper等为 TestModelMapper, 而我喜欢的是TestMapper, 所以需要替换掉Model
+	 */
 	private String getToBeReplace() {
 		String property = this.getProperties().getProperty("toBeReplace");
 		if (property == null) {
@@ -47,7 +59,7 @@ public class MapperPlugin extends PluginAdapter {
 	}
 
 	/**
-	 * 该方法在生成java接口文件前调用
+	 * 该方法在生成Mapper.java接口文件前调用
 	 * 
 	 * 因为我的项目所有的mapper都继承自BaseMapper,所以这里添加继承,然后去掉所有原来的方法
 	 * 
@@ -105,14 +117,15 @@ public class MapperPlugin extends PluginAdapter {
 		updateSourceMethods(mapper);
 
 		//添加新方法
-		addAllMethod(mapper, introspectedTable, "all");
-		addCountMethod(mapper, introspectedTable, "count");
-		addInsertsMethod(mapper, introspectedTable, "inserts");
-		addDeletesMethod(mapper, introspectedTable, "deletes");
-		addLoadMethod(mapper, introspectedTable, "load");
-		addFindByPageSql(mapper, introspectedTable, "findByPageSql");
-		addFindByPageMethod(mapper, introspectedTable, "findByPage");
-		addFindByPageCountMethod(mapper, introspectedTable, "findByPageCount");
+		mapper.addElement(new GetByIdsMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new GetByPojoMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new GetAllMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new GetAllCountMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new GetByPageSqlMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new GetByPageListMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new GetByPageCountMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new SaveBatchMethodBuilder().with(introspectedTable).build());
+		mapper.addElement(new DelByIdsMethodBuilder().with(introspectedTable).build());
 
 		return super.sqlMapDocumentGenerated(document, introspectedTable);
 	}
@@ -124,209 +137,24 @@ public class MapperPlugin extends PluginAdapter {
 			Attribute idAttr = getEleAttr(xmlEle, "id");
 
 			if (idAttr.getValue().equals("selectByPrimaryKey")) {
-				Reflects.setField(idAttr, "value", "findById");
+				Reflects.setField(idAttr, "value", "getById");
 			}
 			else if (idAttr.getValue().equals("deleteByPrimaryKey")) {
-				Reflects.setField(idAttr, "value", "delete");
+				Reflects.setField(idAttr, "value", "delById");
+			}
+			else if (idAttr.getValue().equals("insert")) {
+				Reflects.setField(idAttr, "value", "save");
 			}
 			else if (idAttr.getValue().equals("insertSelective")) {
 				eleIterator.remove();
 			}
-			else if (idAttr.getValue().equals("updateByPrimaryKeySelective")) {
-				Reflects.setField(idAttr, "value", "update");
-			}
 			else if (idAttr.getValue().equals("updateByPrimaryKey")) {
-				eleIterator.remove();
+				Reflects.setField(idAttr, "value", "modify");
+			}
+			else if (idAttr.getValue().equals("updateByPrimaryKeySelective")) {
+				Reflects.setField(idAttr, "value", "modifySelective");
 			}
 		}
-	}
-
-	protected void addFindByPageCountMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("select");
-		ele.addAttribute(new Attribute("id", id));
-		ele.addAttribute(new Attribute("resultType", "java.lang.Integer"));
-		ele.addAttribute(new Attribute("parameterType", "PageInfo"));
-
-		ele.addElement(new TextElement("select count(1) from ("));
-
-		XmlElement include = new XmlElement("include");
-		include.addAttribute(new Attribute("refid", "findByPageSql"));
-		ele.addElement(include);
-
-		ele.addElement(new TextElement(") temp "));
-
-		mapper.addElement(ele);
-	}
-
-	protected void addFindByPageMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("select");
-		ele.addAttribute(new Attribute("id", id));
-		ele.addAttribute(new Attribute("resultMap", "BaseResultMap"));
-		ele.addAttribute(new Attribute("parameterType", "PageInfo"));
-
-		ele.addElement(new TextElement("select temp.* from ("));
-
-		XmlElement include = new XmlElement("include");
-		include.addAttribute(new Attribute("refid", "findByPageSql"));
-		ele.addElement(include);
-
-		ele.addElement(new TextElement(") temp limit #{offset}, #{pageSize}"));
-
-		mapper.addElement(ele);
-	}
-
-	protected void addFindByPageSql(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("sql");
-		ele.addAttribute(new Attribute("id", id));
-
-		ele.addElement(new TextElement("select a.* from " + tableName(table) + " a where 1=1 "));
-
-		Iterator<IntrospectedColumn> iter = table.getAllColumns().iterator();
-		while (iter.hasNext()) {
-			IntrospectedColumn column = iter.next();
-			if (column.getActualColumnName().equals("create_time")
-					|| column.getActualColumnName().equals("modify_time")) {
-				continue;
-			}
-
-			XmlElement iftag = new XmlElement("if");
-			iftag.addAttribute(new Attribute("test", column.getJavaProperty("params.") + " != null"));
-
-			String columnStr = "a." + MyBatis3FormattingUtilities.getEscapedColumnName(column);
-			String paramStr = MyBatis3FormattingUtilities.getParameterClause(column, "params.");
-			iftag.addElement(new TextElement("and " + columnStr + " = " + paramStr));
-
-			ele.addElement(iftag);
-		}
-
-		ele.addElement(new TextElement("order by a." + pkname(table) + " desc"));
-
-		mapper.addElement(ele);
-	}
-
-	protected void addLoadMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("select");
-		ele.addAttribute(new Attribute("id", id));
-		ele.addAttribute(new Attribute("resultMap", "BaseResultMap"));
-
-		if (table.getRules().generatePrimaryKeyClass()) {
-			System.err.println("loads : " + tableName(table) + " has complex primary key.");
-			ele.addElement(new TextElement("unsupport method"));
-			mapper.addElement(ele);
-			return;
-		}
-
-		ele.addElement(new TextElement("select "));
-
-		XmlElement include = new XmlElement("include");
-		include.addAttribute(new Attribute("refid", "Base_Column_List"));
-		ele.addElement(include);
-
-		ele.addElement(new TextElement("from " + tableName(table) + " where " + pkname(table) + " in "));
-
-		XmlElement foreach = new XmlElement("foreach");
-		foreach.addAttribute(new Attribute("collection", "pks"));
-		foreach.addAttribute(new Attribute("item", "item"));
-		foreach.addAttribute(new Attribute("open", "("));
-		foreach.addAttribute(new Attribute("separator", ","));
-		foreach.addAttribute(new Attribute("close", ")"));
-		foreach.addElement(new TextElement("#{item}"));
-
-		ele.addElement(foreach);
-
-		mapper.addElement(ele);
-	}
-
-	protected void addDeletesMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("delete");
-		ele.addAttribute(new Attribute("id", id));
-
-		//多主键, 不能批量删除, 留空
-		if (table.getRules().generatePrimaryKeyClass()) {
-			System.err.println("deletes : " + tableName(table) + " has complex primary key.");
-			ele.addElement(new TextElement("unsupport method"));
-			mapper.addElement(ele);
-			return;
-		}
-
-		ele.addElement(new TextElement("delete from " + tableName(table) + " where " + pkname(table) + " in "));
-
-		XmlElement foreach = new XmlElement("foreach");
-		foreach.addAttribute(new Attribute("collection", "pks"));
-		foreach.addAttribute(new Attribute("item", "item"));
-		foreach.addAttribute(new Attribute("open", "("));
-		foreach.addAttribute(new Attribute("separator", ","));
-		foreach.addAttribute(new Attribute("close", ")"));
-		foreach.addElement(new TextElement("#{item}"));
-
-		ele.addElement(foreach);
-
-		mapper.addElement(ele);
-	}
-
-	protected void addInsertsMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("insert");
-		ele.addAttribute(new Attribute("id", id));
-		ele.addAttribute(new Attribute("parameterType", "java.util.List"));
-
-		StringBuilder insertClause = new StringBuilder("insert into ");
-		insertClause.append(tableName(table) + " (");
-
-		StringBuilder valuesClause = new StringBuilder("(");
-
-		Iterator<IntrospectedColumn> iter = table.getAllColumns().iterator();
-		while (iter.hasNext()) {
-			IntrospectedColumn introspectedColumn = iter.next();
-			if (introspectedColumn.isIdentity()) {
-				continue;
-			}
-
-			insertClause.append(MyBatis3FormattingUtilities.getEscapedColumnName(introspectedColumn));
-			valuesClause.append(MyBatis3FormattingUtilities.getParameterClause(introspectedColumn, "item."));
-			if (iter.hasNext()) {
-				insertClause.append(", ");
-				valuesClause.append(", ");
-			}
-		}
-
-		ele.addElement(new TextElement(insertClause.append(")").toString()));
-		ele.addElement(new TextElement("values"));
-
-		XmlElement foreach = new XmlElement("foreach");
-		foreach.addAttribute(new Attribute("collection", "records"));
-		foreach.addAttribute(new Attribute("item", "item"));
-		foreach.addAttribute(new Attribute("separator", ","));
-		foreach.addElement(new TextElement(valuesClause.append(")").toString()));
-
-		ele.addElement(foreach);
-
-		mapper.addElement(ele);
-	}
-
-	protected void addCountMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("select");
-		ele.addAttribute(new Attribute("id", id));
-		ele.addAttribute(new Attribute("resultType", "java.lang.Integer"));
-
-		ele.addElement(new TextElement("select count(1) from " + tableName(table)));
-
-		mapper.addElement(ele);
-	}
-
-	protected void addAllMethod(XmlElement mapper, IntrospectedTable table, String id) {
-		XmlElement ele = new XmlElement("select");
-		ele.addAttribute(new Attribute("id", id));
-		ele.addAttribute(new Attribute("resultMap", "BaseResultMap"));
-
-		ele.addElement(new TextElement("select "));
-
-		XmlElement include = new XmlElement("include");
-		include.addAttribute(new Attribute("refid", "Base_Column_List"));
-		ele.addElement(include);
-
-		ele.addElement(new TextElement("from " + tableName(table)));
-
-		mapper.addElement(ele);
 	}
 
 	protected Attribute getEleAttr(XmlElement ele, String attrName) {
@@ -336,13 +164,5 @@ public class MapperPlugin extends PluginAdapter {
 			}
 		}
 		return null;
-	}
-
-	private String tableName(IntrospectedTable table) {
-		return table.getFullyQualifiedTableNameAtRuntime();
-	}
-
-	private String pkname(IntrospectedTable table) {
-		return MyBatis3FormattingUtilities.getEscapedColumnName(table.getPrimaryKeyColumns().get(0));
 	}
 }
