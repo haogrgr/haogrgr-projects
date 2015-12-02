@@ -1,6 +1,6 @@
 package com.haogrgr.mybatis.generator.plugin;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,18 +8,21 @@ import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.Plugin;
 import org.mybatis.generator.api.PluginAdapter;
+import org.mybatis.generator.api.dom.java.Field;
 import org.mybatis.generator.api.dom.java.FullyQualifiedJavaType;
 import org.mybatis.generator.api.dom.java.JavaVisibility;
 import org.mybatis.generator.api.dom.java.Method;
 import org.mybatis.generator.api.dom.java.Parameter;
 import org.mybatis.generator.api.dom.java.TopLevelClass;
 
-import com.haogrgr.mybatis.generator.utils.DBUtils;
+import com.google.common.base.Strings;
 
 /**
- * mybatis-generator提供的插件接口,配置在genrator.xml中
- * <p>Author: desheng.tu</p>
- * <p>Date: 2014年8月5日</p>
+ * 生成Model插件, 添加主键的构造方法, 实现Serializable接口, 字段加注释
+ * 
+ * @author desheng.tu
+ * @date 2015年12月2日 下午7:39:35 
+ *
  */
 public class ModelPlugin extends PluginAdapter implements Plugin {
 
@@ -28,103 +31,126 @@ public class ModelPlugin extends PluginAdapter implements Plugin {
 		return true;
 	}
 
+	private boolean getGenerateSerialVersionField() {
+		String property = this.getProperties().getProperty("generateSerialVersionField");
+		return "true".equals(property);
+	}
+
+	private String getToBeReplace() {
+		String property = this.getProperties().getProperty("toBeReplace");
+		if (property == null) {
+			return "";
+		}
+		return property;
+	}
+
+	/**
+	 * 替换掉主键类中的指定字符, 如   TestModelKey -> TestKey
+	 */
+	@Override
+	public void initialized(IntrospectedTable introspectedTable) {
+		String pkname = introspectedTable.getPrimaryKeyType();
+		pkname = pkname.replace(getToBeReplace(), "");
+		introspectedTable.setPrimaryKeyType(pkname);
+	}
+
+	/**
+	 * 主键类生成, 联合主键会生成主键类
+	 */
+	@Override
+	public boolean modelPrimaryKeyClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+		//添加serialVersionUID属性
+		addSerialVersionField(topLevelClass);
+
+		//添加设置主键的构造方法
+		addPkConstructorMethod(topLevelClass, introspectedTable, false);
+
+		//添加默认构造方法
+		addDefaultConstructorMethod(topLevelClass);
+
+		//字段加注释
+		addFieldRemarks(topLevelClass, introspectedTable);
+
+		return true;
+	}
+
 	/**
 	 * 该方法在生成model文件前调用
-	 * 
-	 * 因为我的项目所有model都继承自BaseModel,所以这里添加继承,然后去掉积累中以有的属性(id, create_time, modify_tiem)
-	 * 
 	 */
 	@Override
 	public boolean modelBaseRecordClassGenerated(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
-		//所有model继承自BaseModel
-		FullyQualifiedJavaType superInterface = new FullyQualifiedJavaType(topLevelClass.getType().getPackageName()
-				+ ".BaseModel");
-		topLevelClass.addImportedType(superInterface);
-		topLevelClass.setSuperClass(superInterface);
-
 		//添加serialVersionUID属性
-		FullyQualifiedJavaType longClazz = new FullyQualifiedJavaType("long");
-		org.mybatis.generator.api.dom.java.Field serial = new org.mybatis.generator.api.dom.java.Field(
-				"serialVersionUID", longClazz);
+		addSerialVersionField(topLevelClass);
+
+		//添加设置主键的构造方法
+		addPkConstructorMethod(topLevelClass, introspectedTable, introspectedTable.getRules().generatePrimaryKeyClass());
+
+		//添加默认构造方法
+		addDefaultConstructorMethod(topLevelClass);
+
+		//字段加注释
+		addFieldRemarks(topLevelClass, introspectedTable);
+
+		return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable);
+	}
+
+	private void addFieldRemarks(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+		Map<String, String> map = new HashMap<>();
+		for (IntrospectedColumn column : introspectedTable.getAllColumns()) {
+			map.put(column.getJavaProperty(), column.getActualColumnName() + " : " + column.getRemarks());
+		}
+		for (Field field : topLevelClass.getFields()) {
+			String c = map.get(field.getName());
+			if (!Strings.isNullOrEmpty(c)) {
+				field.addJavaDocLine("/** " + c + "**/");
+			}
+		}
+	}
+
+	private void addSerialVersionField(TopLevelClass topLevelClass) {
+		if (!getGenerateSerialVersionField()) {
+			return;
+		}
+
+		topLevelClass.addImportedType("java.io.Serializable");
+		topLevelClass.addSuperInterface(new FullyQualifiedJavaType("java.io.Serializable"));
+
+		Field serial = new Field("serialVersionUID", new FullyQualifiedJavaType("long"));
 		serial.setStatic(true);
 		serial.setFinal(true);
 		serial.setVisibility(JavaVisibility.PRIVATE);
 		serial.setInitializationString("-1L");
 		topLevelClass.getFields().add(0, serial);
+	}
 
-		//移除继承自BaseModel中的属性
-		org.mybatis.generator.api.dom.java.Field pkField = null;
-		List<org.mybatis.generator.api.dom.java.Field> fields = topLevelClass.getFields();
-		List<org.mybatis.generator.api.dom.java.Field> toRemoveFields = new ArrayList<>();
-		for (org.mybatis.generator.api.dom.java.Field field : fields) {
-			if (field.getName().equals("id")) {
-				toRemoveFields.add(field);
-				pkField = field;
-			}
-			else if (field.getName().equals("createTime")) {
-				toRemoveFields.add(field);
-			}
-			else if (field.getName().equals("modifyTime")) {
-				toRemoveFields.add(field);
-			}
-		}
-		System.out.println(toRemoveFields);
-		fields.removeAll(toRemoveFields);
-
-		//移除继承自BaseModel中的方法
-		List<Method> methods = topLevelClass.getMethods();
-		List<Method> toRemoveMethods = new ArrayList<>();
-		for (Method method : methods) {
-			if (method.getName().equals("getId") || method.getName().equals("setId")) {
-				toRemoveMethods.add(method);
-			}
-			else if (method.getName().equals("getCreateTime") || method.getName().equals("setCreateTime")) {
-				toRemoveMethods.add(method);
-			}
-			else if (method.getName().equals("getModifyTime") || method.getName().equals("setModifyTime")) {
-				toRemoveMethods.add(method);
-			}
-		}
-		System.out.println(toRemoveFields);
-		methods.removeAll(toRemoveMethods);
-
-		//添加设置id的构造方法
-		Method cmethod = new Method(topLevelClass.getType().getShortName());
-		cmethod.setConstructor(true);
-		cmethod.addParameter(new Parameter(pkField.getType(), pkField.getName()));
-		cmethod.setVisibility(JavaVisibility.PUBLIC);
-		cmethod.addBodyLine("this." + pkField.getName() + " = " + pkField.getName() + ";");
-		methods.add(0, cmethod);
-
-		//添加默认构造方法
+	private void addDefaultConstructorMethod(TopLevelClass topLevelClass) {
 		Method dcmethod = new Method(topLevelClass.getType().getShortName());
 		dcmethod.setConstructor(true);
 		dcmethod.setVisibility(JavaVisibility.PUBLIC);
 		dcmethod.addBodyLine("");
-		methods.add(0, dcmethod);
-
-		//introspectedTable.getAllColumns().get(0).getRemarks();
-
-		Map<String, String> map = DBUtils.getColumnComment(introspectedTable.getTableConfiguration().getSchema(),
-				tablename(introspectedTable));
-		for (IntrospectedColumn column : introspectedTable.getAllColumns()) {
-			String c = map.get(column.getActualColumnName());
-			if (c != null) {
-				map.put(column.getJavaProperty(), c);
-			}
-		}
-		System.out.println(map);
-		for (org.mybatis.generator.api.dom.java.Field field : topLevelClass.getFields()) {
-			String c = map.get(field.getName());
-			if (c != null && c.trim().length() > 0) {
-				field.addJavaDocLine("/** " + c + "**/");
-			}
-		}
-
-		return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable);
+		topLevelClass.getMethods().add(0, dcmethod);
 	}
 
-	private String tablename(IntrospectedTable table) {
-		return table.getFullyQualifiedTableNameAtRuntime();
+	private void addPkConstructorMethod(TopLevelClass topLevelClass, IntrospectedTable table, boolean callSuper) {
+		Method cmethod = new Method(topLevelClass.getType().getShortName());
+		cmethod.setVisibility(JavaVisibility.PUBLIC);
+		cmethod.setConstructor(true);
+		for (IntrospectedColumn pkclumn : table.getPrimaryKeyColumns()) {
+			cmethod.addParameter(new Parameter(pkclumn.getFullyQualifiedJavaType(), pkclumn.getJavaProperty()));
+		}
+
+		if (!callSuper) {
+			table.getPrimaryKeyColumns().stream().forEach(pkclumn -> {
+				cmethod.addBodyLine("this." + pkclumn.getJavaProperty() + " = " + pkclumn.getJavaProperty() + ";");
+			});
+		}
+		else {//有主键类, 直接调用super构造方法
+			table.getPrimaryKeyColumns().stream().map(pkclumn -> pkclumn.getJavaProperty())
+					.reduce((pk1, pk2) -> pk1 + ", " + pk2)
+					.ifPresent(pkstr -> cmethod.addBodyLine("super(" + pkstr + ");"));
+		}
+
+		topLevelClass.getMethods().add(0, cmethod);
 	}
+
 }

@@ -27,7 +27,7 @@ import com.haogrgr.mybatis.generator.utils.PluginUtils;
 import com.haogrgr.mybatis.generator.utils.Reflects;
 
 /**
- * mybatis-generator提供的插件接口,配置在genrator.xml中
+ * 生成Mapper.xml和Mapper.java的插件
  * 
  * @author desheng.tu
  * @date 2014年8月5日 下午6:41:07 
