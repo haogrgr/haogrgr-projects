@@ -34,7 +34,7 @@ import com.haogrgr.mybatis.generator.utils.DBUtils;
  * <p>Author: desheng.tu</p>
  * <p>Date: 2014年8月5日</p>
  */
-public class MyPlugin extends PluginAdapter implements Plugin {
+public class ModelPlugin extends PluginAdapter implements Plugin {
 
     @Override
     public boolean validate(List<String> warnings) {

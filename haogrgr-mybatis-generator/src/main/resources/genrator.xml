@@ -8,9 +8,12 @@
 	<!-- <classPathEntry location="mysql-connector-java-5.1.27.jar" /> -->
 
 	<context id="DB2Tables" targetRuntime="MyBatis3">
-		<property name="xmlFormatter" value="com.haogrgr.mybatis.generator.plugin.MyXmlFormatter" />
+		<property name="xmlFormatter" value="com.haogrgr.mybatis.generator.utils.MyXmlFormatter" />
 		
-		<plugin type="com.haogrgr.mybatis.generator.plugin.MyPlugin"></plugin>
+		<plugin type="com.haogrgr.mybatis.generator.plugin.MapperPlugin">
+			<property name="baseMapperName" value="com.haogrgr.test.dao.BaseMapper" />
+			<property name="toBeReplace" value="" />
+		</plugin>
 
 		<commentGenerator>
 			<!-- 是否去除自动生成的注释 true：是 ： false:否 -->
@@ -42,10 +45,16 @@
 		</javaClientGenerator>
 
 		<!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 -->
-		<table schema="test" tableName="test" domainObjectName="Test" 
+		<table schema="test" tableName="test" domainObjectName="TestModel" 
 			enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
 			enableUpdateByExample="false" selectByExampleQueryId="false">
 			<generatedKey column="id" sqlStatement="JDBC" />
+		</table>
+		
+		<!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 -->
+		<table schema="test" tableName="temp" domainObjectName="TempModel" 
+			enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false"
+			enableUpdateByExample="false" selectByExampleQueryId="false">
 		</table>
 	</context>
 </generatorConfiguration> 
