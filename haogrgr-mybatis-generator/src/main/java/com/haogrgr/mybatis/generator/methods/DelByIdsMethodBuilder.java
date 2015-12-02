@@ -21,7 +21,7 @@ public class DelByIdsMethodBuilder extends AbstractMethodBuilder {
 		ele.addElement(new TextElement("delete from " + tableName() + " where " + pkName() + " in "));
 
 		XmlElement foreach = new XmlElement("foreach");
-		foreach.addAttribute(new Attribute("collection", "pks"));
+		foreach.addAttribute(new Attribute("collection", "list"));
 		foreach.addAttribute(new Attribute("item", "item"));
 		foreach.addAttribute(new Attribute("open", "("));
 		foreach.addAttribute(new Attribute("separator", ","));

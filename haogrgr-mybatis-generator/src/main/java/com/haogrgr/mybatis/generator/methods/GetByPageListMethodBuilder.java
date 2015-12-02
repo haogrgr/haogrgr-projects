@@ -16,7 +16,7 @@ public class GetByPageListMethodBuilder extends AbstractMethodBuilder {
 		ele.addElement(new TextElement("select temp.* from ("));
 
 		XmlElement include = new XmlElement("include");
-		include.addAttribute(new Attribute("refid", "findByPageSql"));
+		include.addAttribute(new Attribute("refid", "getByPageSql"));
 		ele.addElement(include);
 
 		ele.addElement(new TextElement(") temp limit #{offset}, #{pageSize}"));

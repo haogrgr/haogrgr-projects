@@ -16,7 +16,7 @@ public class GetByPageCountMethodBuilder extends AbstractMethodBuilder {
 		ele.addElement(new TextElement("select count(1) from ("));
 
 		XmlElement include = new XmlElement("include");
-		include.addAttribute(new Attribute("refid", "findByPageSql"));
+		include.addAttribute(new Attribute("refid", "getByPageSql"));
 		ele.addElement(include);
 
 		ele.addElement(new TextElement(") temp "));

@@ -25,7 +25,6 @@ public class SaveBatchMethodBuilder extends AbstractMethodBuilder {
 		while (iter.hasNext()) {
 			IntrospectedColumn column = iter.next();
 
-			//TODO:联合主键, 以及非自动生成方式情况考虑
 			if (column.isIdentity()) {
 				continue;
 			}
@@ -42,7 +41,7 @@ public class SaveBatchMethodBuilder extends AbstractMethodBuilder {
 		ele.addElement(new TextElement("values"));
 
 		XmlElement foreach = new XmlElement("foreach");
-		foreach.addAttribute(new Attribute("collection", "records"));
+		foreach.addAttribute(new Attribute("collection", "list"));
 		foreach.addAttribute(new Attribute("item", "item"));
 		foreach.addAttribute(new Attribute("separator", ","));
 		foreach.addElement(new TextElement(valuesClause.append(")").toString()));
