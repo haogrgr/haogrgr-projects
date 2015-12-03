@@ -20,6 +20,7 @@
 		<plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
 		<plugin type="com.haogrgr.mybatis.generator.plugin.ModelPlugin">
 			<property name="generateSerialVersionField" value="${plugin.model.generateSerialVersionField}" />
+			<property name="setMethodReturnThis" value="${plugin.model.setMethodReturnThis}" />
 			<property name="toBeReplace" value="${plugin.common.toBeReplace}" />
 		</plugin>
 

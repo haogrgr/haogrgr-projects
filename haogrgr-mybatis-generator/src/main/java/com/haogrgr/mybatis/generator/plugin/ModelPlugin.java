@@ -36,6 +36,11 @@ public class ModelPlugin extends PluginAdapter implements Plugin {
 		return "true".equals(property);
 	}
 
+	private boolean getSetMethodReturnThis() {
+		String property = this.getProperties().getProperty("setMethodReturnThis");
+		return "true".equals(property);
+	}
+
 	private String getToBeReplace() {
 		return this.getProperties().getProperty("toBeReplace", "");
 	}
@@ -67,6 +72,9 @@ public class ModelPlugin extends PluginAdapter implements Plugin {
 		//字段加注释
 		addFieldRemarks(topLevelClass, introspectedTable);
 
+		//set方法返回this
+		//useSetMethodReturnThis(topLevelClass, introspectedTable);
+
 		return true;
 	}
 
@@ -87,7 +95,23 @@ public class ModelPlugin extends PluginAdapter implements Plugin {
 		//字段加注释
 		addFieldRemarks(topLevelClass, introspectedTable);
 
+		//set方法返回this
+		useSetMethodReturnThis(topLevelClass, introspectedTable);
+
 		return super.modelBaseRecordClassGenerated(topLevelClass, introspectedTable);
+	}
+
+	private void useSetMethodReturnThis(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
+		if (!getSetMethodReturnThis()) {
+			return;
+		}
+
+		topLevelClass.getMethods().stream().filter(method -> {
+			return !method.isConstructor() && method.getName().startsWith("set") && method.getReturnType() == null;
+		}).forEach(method -> {
+			method.setReturnType(topLevelClass.getType());
+			method.addBodyLine("return this;");
+		});
 	}
 
 	private void addFieldRemarks(TopLevelClass topLevelClass, IntrospectedTable introspectedTable) {
