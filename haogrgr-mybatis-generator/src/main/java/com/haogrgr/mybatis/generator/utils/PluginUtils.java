@@ -7,20 +7,32 @@ public class PluginUtils {
 	/**
 	 * 获取Model类名
 	 */
-	public static String getModelName(IntrospectedTable introspectedTable) {
-		return introspectedTable.getTableConfiguration().getDomainObjectName();
+	public static String getModelTypeShortName(IntrospectedTable table) {
+		return table.getTableConfiguration().getDomainObjectName();
+	}
+
+	public static String getModelType(IntrospectedTable table) {
+		return table.getBaseRecordType();
 	}
 
 	/**
 	 * 获取主键的类型名
 	 */
-	public static String getPKTypeShortName(IntrospectedTable introspectedTable) {
-		if (introspectedTable.getRules().generatePrimaryKeyClass()) {
-			return introspectedTable.getPrimaryKeyType().substring(
-					introspectedTable.getPrimaryKeyType().lastIndexOf('.') + 1);
+	public static String getPKTypeShortName(IntrospectedTable table) {
+		if (table.getRules().generatePrimaryKeyClass()) {
+			return table.getPrimaryKeyType().substring(table.getPrimaryKeyType().lastIndexOf('.') + 1);
 		}
 		else {
-			return introspectedTable.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType().getShortName();
+			return table.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType().getShortName();
+		}
+	}
+
+	public static String getPKType(IntrospectedTable table) {
+		if (table.getRules().generatePrimaryKeyClass()) {
+			return table.getPrimaryKeyType();
+		}
+		else {
+			return table.getPrimaryKeyColumns().get(0).getFullyQualifiedJavaType().getFullyQualifiedName();
 		}
 	}
 

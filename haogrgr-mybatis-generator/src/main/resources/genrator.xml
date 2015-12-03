@@ -13,14 +13,25 @@
 		<property name="xmlFormatter" value="com.haogrgr.mybatis.generator.utils.SortedXmlFormatter" />
 
 		<plugin type="com.haogrgr.mybatis.generator.plugin.MapperPlugin">
-			<property name="baseMapperName" value="${app.baseMapperName}" />
-			<property name="toBeReplace" value="${app.toBeReplace}" />
+			<property name="baseMapperName" value="${plugin.mapper.baseMapperName}" />
+			<property name="toBeReplace" value="${plugin.common.toBeReplace}" />
 		</plugin>
 
 		<plugin type="org.mybatis.generator.plugins.ToStringPlugin" />
 		<plugin type="com.haogrgr.mybatis.generator.plugin.ModelPlugin">
-			<property name="generateSerialVersionField" value="${app.generateSerialVersionField}" />
-			<property name="toBeReplace" value="${app.toBeReplace}" />
+			<property name="generateSerialVersionField" value="${plugin.model.generateSerialVersionField}" />
+			<property name="toBeReplace" value="${plugin.common.toBeReplace}" />
+		</plugin>
+
+		<plugin type="com.haogrgr.mybatis.generator.plugin.ServicePlugin">
+			<property name="generateIface" value="${plugin.service.generateIface}" />
+			<property name="servicePackage" value="${generator.service.servicePackage}" />
+			<property name="baseServiceName" value="${plugin.service.baseServiceName}" />
+			<property name="serviceImplPackage" value="${generator.service.serviceImplPackage}" />
+			<property name="baseServiceSupportName" value="${plugin.service.baseServiceSupportName}" />
+			<property name="serviceImplNameSuffix" value="${plugin.service.serviceImplNameSuffix}" />
+			<property name="baseMapperName" value="${plugin.mapper.baseMapperName}" />
+			<property name="toBeReplace" value="${plugin.common.toBeReplace}" />
 		</plugin>
 
 
@@ -38,16 +49,16 @@
 			<property name="forceBigDecimals" value="true" />
 		</javaTypeResolver>
 
-		<javaModelGenerator targetProject="${target.project}" targetPackage="${model.package}">
+		<javaModelGenerator targetProject="${generator.common.target.project}" targetPackage="${generator.model.package}">
 			<property name="enableSubPackages" value="false" />
 			<property name="trimStrings" value="false" />
 		</javaModelGenerator>
 
-		<sqlMapGenerator targetProject="${target.project}" targetPackage="${mapper.xml.package}">
+		<sqlMapGenerator targetProject="${generator.common.target.project}" targetPackage="${generator.mapper.xmlPackage}">
 			<property name="enableSubPackages" value="false" />
 		</sqlMapGenerator>
 
-		<javaClientGenerator type="XMLMAPPER" targetProject="${target.project}" targetPackage="${mapper.java.package}">
+		<javaClientGenerator type="XMLMAPPER" targetProject="${generator.common.target.project}" targetPackage="${generator.mapper.javaPackage}">
 			<property name="enableSubPackages" value="false" />
 		</javaClientGenerator>
 

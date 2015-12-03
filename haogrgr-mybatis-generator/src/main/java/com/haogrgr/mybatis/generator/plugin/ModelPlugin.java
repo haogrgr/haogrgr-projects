@@ -37,11 +37,7 @@ public class ModelPlugin extends PluginAdapter implements Plugin {
 	}
 
 	private String getToBeReplace() {
-		String property = this.getProperties().getProperty("toBeReplace");
-		if (property == null) {
-			return "";
-		}
-		return property;
+		return this.getProperties().getProperty("toBeReplace", "");
 	}
 
 	/**

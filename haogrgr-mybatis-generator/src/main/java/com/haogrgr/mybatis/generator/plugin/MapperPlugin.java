@@ -51,11 +51,7 @@ public class MapperPlugin extends PluginAdapter {
 	 * 要替换的字符, eg: 当model名为TestModel时, 生成的Mapper等为 TestModelMapper, 而我喜欢的是TestMapper, 所以需要替换掉Model
 	 */
 	private String getToBeReplace() {
-		String property = this.getProperties().getProperty("toBeReplace");
-		if (property == null) {
-			return "";
-		}
-		return property;
+		return this.getProperties().getProperty("toBeReplace", "");
 	}
 
 	/**
@@ -67,7 +63,7 @@ public class MapperPlugin extends PluginAdapter {
 	@Override
 	public boolean clientGenerated(Interface interfaze, TopLevelClass topClass, IntrospectedTable introspectedTable) {
 		//为所有的mapper接口继承xxxx.BaseMapper
-		String domainObjectName = PluginUtils.getModelName(introspectedTable);
+		String domainObjectName = PluginUtils.getModelTypeShortName(introspectedTable);
 		String primaryKeyType = PluginUtils.getPKTypeShortName(introspectedTable);
 		String parentInterface = getBaseMapperName() + "<" + domainObjectName + ", " + primaryKeyType + ">";
 		FullyQualifiedJavaType superInterface = new FullyQualifiedJavaType(parentInterface);
