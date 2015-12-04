@@ -5,6 +5,79 @@
 
 自用的代码生成工具, 基于Mybatis官方的generator项目, 通过其插件机制类生成`Model` `Mapper` `Service` 一系列类, 通过继承通用的`BaseMapper` `BaseService` 等类来实现单表的增删改查等常用的方法封装.
 
+会生成带如下方法的Mapper, Service
+
+```java
+public interface BaseMapper<T, K> {
+
+	/**
+	 * 根据主键查找记录, 返回对应记录
+	 */
+	public T getById(K id);
+
+	/**
+	 * 根据主键批量查找对应的记录, 返回对应记录
+	 */
+	public List<T> getByIds(List<K> ids);
+
+	/**
+	 * 根据pojo熟悉查找记录, 返回对应记录
+	 */
+	public List<T> getByPojo(T pojo);
+
+	/**
+	 * 分页查询, 返回分页列表
+	 */
+	public <M> List<M> getByPageList(PageInfo<M> page);
+
+	/**
+	 * 分页查询, 返回总记录数
+	 */
+	public <M> Integer getByPageCount(PageInfo<M> page);
+
+	/**
+	 * 查询所有记录
+	 */
+	public List<T> getAll();
+
+	/**
+	 * 查询总记录数
+	 */
+	public Integer getAllCount();
+
+	/**
+	 * 修改记录, 返回修改的记录数
+	 */
+	public Integer modify(T record);
+
+	/**
+	 * 选择性的修改记录, 返回修改的记录数
+	 */
+	public Integer modifySelective(T record);
+
+	/**
+	 * 插入记录, 返回插入记录数(0 or 1)
+	 */
+	public Integer save(T record);
+
+	/**
+	 * mysql批量插入记录, 返回插入记录条数.
+	 */
+	public Integer saveBatch(List<T> records);
+
+	/**
+	 * 根据主键删除, 返回删除记录数
+	 */
+	public Integer delById(K id);
+
+	/**
+	 * 根据主键批量删除, 返回删除记录数, 注意: 联合主键, 不支持该操作
+	 */
+	public Integer delByIds(List<K> ids);
+
+}
+```
+
 #### 例子
 
 具体生成的代码, 可以以参考haogrgr-test里面的`model.TestModel` `dao.TestMapper` `service.TestService` 等类来查看生成后的代码的样子.
