@@ -30,7 +30,6 @@ public class TableConfigPlugin extends PluginAdapter {
 		config.setSelectByExampleStatementEnabled(false);
 		config.setDeleteByExampleStatementEnabled(false);
 		config.setCountByExampleStatementEnabled(false);
-		
 		config.setUpdateByExampleStatementEnabled(false);
 	}
 }
