@@ -12,6 +12,8 @@
 
 		<property name="xmlFormatter" value="com.haogrgr.mybatis.generator.utils.SortedXmlFormatter" />
 
+		<plugin type="com.haogrgr.mybatis.generator.plugin.TableConfigPlugin"/>
+		
 		<plugin type="com.haogrgr.mybatis.generator.plugin.MapperPlugin">
 			<property name="baseMapperName" value="${plugin.mapper.baseMapperName}" />
 			<property name="toBeReplace" value="${plugin.common.toBeReplace}" />
@@ -64,7 +66,7 @@
 		</javaClientGenerator>
 
 		<!-- tableName:用于自动生成代码的数据库表；domainObjectName:对应于数据库表的javaBean类名 -->
-		<table schema="test" tableName="test" domainObjectName="TestModel" enableSelectByExample="false" enableDeleteByExample="false" enableCountByExample="false" enableUpdateByExample="false" selectByExampleQueryId="false">
+		<table schema="test" tableName="test" domainObjectName="TestModel">
 			<generatedKey column="id" sqlStatement="JDBC" />
 			<!-- 忽略列，不生成bean 字段 -->
 			<!-- <ignoreColumn column="FRED" /> -->

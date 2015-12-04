@@ -70,15 +70,19 @@ public class ServicePlugin extends PluginAdapter implements Plugin {
 	@Override
 	public List<GeneratedJavaFile> contextGenerateAdditionalJavaFiles(IntrospectedTable introspectedTable) {
 		List<GeneratedJavaFile> files = Lists.newArrayList();
+		
+		//生成接口
 		if (generateIface()) {
 			files.add(generateServiceIface(introspectedTable));
 		}
 
+		//生成实现类
 		files.add(generateServiceImpl(introspectedTable));
 
 		return files;
 	}
 
+	//生成Service实现类
 	private GeneratedJavaFile generateServiceImpl(IntrospectedTable table) {
 		String baseName = PluginUtils.getModelTypeShortName(table).replace(getToBeReplace(), "");
 		String modelName = PluginUtils.getModelTypeShortName(table);
@@ -94,14 +98,17 @@ public class ServicePlugin extends PluginAdapter implements Plugin {
 		topclass.addImportedType(new FullyQualifiedJavaType(PluginUtils.getPKType(table)));
 		topclass.addImportedType(new FullyQualifiedJavaType(getBaseServiceSupportName()));
 
+		//继承BaseServiceSupport类
 		String superClassName = String.format("%s<%s, %s>", getBaseServiceSupportName(), modelName, pkName);
 		topclass.setSuperClass(superClassName);
 
+		//实现接口
 		if (generateIface()) {
 			topclass.addImportedType(new FullyQualifiedJavaType(getServiceIfaceTypeName(baseName)));
 			topclass.addSuperInterface(new FullyQualifiedJavaType(getServiceIfaceTypeName(baseName)));
 		}
 
+		//注入Mapper
 		topclass.addImportedType("javax.annotation.Resource");
 		topclass.addImportedType(getServiceImplMapperFieldType(baseName, table));
 		Field field = new Field();
@@ -111,6 +118,7 @@ public class ServicePlugin extends PluginAdapter implements Plugin {
 		field.addAnnotation("@Resource");
 		topclass.addField(field);
 
+		//实现getMapper方法
 		Method method = new Method("getMapper");
 		method.addAnnotation("@Override");
 		method.setVisibility(JavaVisibility.PUBLIC);
@@ -142,6 +150,7 @@ public class ServicePlugin extends PluginAdapter implements Plugin {
 		return getServiceImplPackage() + "." + baseName + "Service" + getServiceImplNameSuffix();
 	}
 
+	//生成Service接口
 	private GeneratedJavaFile generateServiceIface(IntrospectedTable table) {
 		String baseName = PluginUtils.getModelTypeShortName(table).replace(getToBeReplace(), "");
 		String modelName = PluginUtils.getModelTypeShortName(table);
@@ -154,6 +163,7 @@ public class ServicePlugin extends PluginAdapter implements Plugin {
 		topclass.addImportedType(new FullyQualifiedJavaType(PluginUtils.getPKType(table)));
 		topclass.addImportedType(new FullyQualifiedJavaType(getBaseServiceName()));
 
+		//继承BaseService接口
 		String superIfaceName = String.format("%s<%s, %s>", getBaseServiceName(), modelName, pkName);
 		topclass.addSuperInterface(new FullyQualifiedJavaType(superIfaceName));
 
