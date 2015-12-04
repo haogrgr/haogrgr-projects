@@ -11,29 +11,19 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 public class Main {
 
+	public static List<String> warnings = new ArrayList<String>();
+
 	public static void main(String[] args) throws Exception {
 		System.setProperty("mybatis.generator.overwrite", "true");
 
-		List<String> warnings = new ArrayList<String>();
-		boolean overwrite = true;
 		File configFile = new File(Main.class.getResource("/genrator.xml").toURI());
-		init();
 
-		ConfigurationParser cp = new ConfigurationParser(warnings);
-		Configuration config = cp.parseConfiguration(configFile);
-		DefaultShellCallback callback = new DefaultShellCallback(overwrite);
-		MyBatisGenerator generator = new MyBatisGenerator(config, callback, warnings);
+		Configuration config = new ConfigurationParser(warnings).parseConfiguration(configFile);
+		MyBatisGenerator generator = new MyBatisGenerator(config, new DefaultShellCallback(true), warnings);
+
 		generator.generate(null);
 
 		System.out.println(warnings);
-	}
-
-	public static void init() {
-		File file = new File("C:\\mybatis");
-		if (file.exists()) {
-			System.out.println(file.delete());
-		}
-		file.mkdirs();
 	}
 
 }
