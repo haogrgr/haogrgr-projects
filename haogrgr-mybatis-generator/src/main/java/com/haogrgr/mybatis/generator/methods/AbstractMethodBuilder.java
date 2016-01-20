@@ -1,5 +1,8 @@
 package com.haogrgr.mybatis.generator.methods;
 
+import java.util.List;
+
+import org.mybatis.generator.api.IntrospectedColumn;
 import org.mybatis.generator.api.IntrospectedTable;
 import org.mybatis.generator.api.dom.xml.Attribute;
 import org.mybatis.generator.api.dom.xml.XmlElement;
@@ -26,6 +29,26 @@ public abstract class AbstractMethodBuilder {
 
 	protected String pkName() {
 		return MyBatis3FormattingUtilities.getEscapedColumnName(table.getPrimaryKeyColumns().get(0));
+	}
+
+	protected String pkNames() {
+		StringBuilder pkstrs = new StringBuilder();
+		List<IntrospectedColumn> pkcolumns = table.getPrimaryKeyColumns();
+		for (IntrospectedColumn column : pkcolumns) {
+			pkstrs.append(MyBatis3FormattingUtilities.getEscapedColumnName(column) + ",");
+		}
+		pkstrs.deleteCharAt(pkstrs.length() - 1);
+		return pkstrs.toString();
+	}
+
+	protected String pkValues(String prefix) {
+		StringBuilder pkstrs = new StringBuilder();
+		List<IntrospectedColumn> pkcolumns = table.getPrimaryKeyColumns();
+		for (IntrospectedColumn column : pkcolumns) {
+			pkstrs.append(MyBatis3FormattingUtilities.getParameterClause(column, prefix) + ",");
+		}
+		pkstrs.deleteCharAt(pkstrs.length() - 1);
+		return pkstrs.toString();
 	}
 
 	protected boolean generatePrimaryKeyClass() {
