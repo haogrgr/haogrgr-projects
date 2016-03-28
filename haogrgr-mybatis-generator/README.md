@@ -80,17 +80,17 @@ public interface BaseMapper<T, K> {
 
 #### 例子
 
-具体生成的代码, 可以以参考haogrgr-test里面的`model.TestModel` `dao.TestMapper` `service.TestService` 等类来查看生成后的代码的样子.
+具体生成的代码, 可以以参考[haogrgr-test](https://github.com/haogrgr/haogrgr-test/tree/master/src/main/java/com/haogrgr/test/dao)里面的`model.TestModel` `dao.TestMapper` `service.TestService` 等类来查看生成后的代码的样子.
 
 #### 目的
 
 1. 生成的代码虽然也有增删改查等功能, 但是没有实现公共的接口, 代码重用不方便.
 
-2. 生成的Mapper中有很多我不常用的方法, 比如ByExample等一系列方法.
+2. 生成的Mapper中有很多我不常用的方法, 比如ByExample等一系列方法, 个人不习惯这种方式.
 
 3. 方法命名不喜, 个人比较喜欢精简, 形象的命名, 比如 `get` , `modify`, `save`, `del` 的命名方式.
 
-4. 缺少了一些我常用的方法, 比如`批量插入`等方法.
+4. 缺少了一些常用的方法, 比如`批量插入`等方法.
 
 5. 习惯Model中的set方法返回this来减少代码.
 
@@ -108,7 +108,6 @@ public interface BaseMapper<T, K> {
 
 12. Model代码中, 属性和属性之间有空行, 个人不习惯.
 
-13. 你哪来的这么要求......
 
 #### 具体实现
 
@@ -176,6 +175,8 @@ public interface BaseMapper<T, K> {
 	6. `plugin.service.baseServiceName` BaseService接口类全名
 	7. `plugin.service.baseServiceSupportName` BaseService通用实现
 	8. `plugin.service.serviceImplNameSuffix` 接口实现类名后缀, 如Impl等
+
+
 
 #### 项目总结
 
